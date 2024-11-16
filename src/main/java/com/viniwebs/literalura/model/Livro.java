@@ -3,27 +3,29 @@ package com.viniwebs.literalura.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+import java.util.List;
+
+
 public class Livro {
-    @JsonProperty("title")
     private String titulo;
-
-    @JsonProperty("author")
-    private String autor;
-
-    @JsonProperty("languages")
-    private String idioma;
-
-    @JsonProperty("download_count")
+    private List<Autor> autor;
+    private List<String> idioma;
     private Integer numeroDeDownloads;
 
     public Livro() {}
 
-    public Livro(String titulo, String autor, String idioma, Integer numeroDeDownloads) {
+    public Livro(String titulo, List<Autor> autor, List<String> idioma, Integer numeroDeDownloads) {
         this.titulo = titulo;
         this.autor = autor;
         this.idioma = idioma;
         this.numeroDeDownloads = numeroDeDownloads;
+    }
+
+    public Livro(LivroDTO livroDTO) {
+        this.titulo = livroDTO.title();
+        this.autor = livroDTO.authors().stream().map(Autor::new).toList();
+        this.idioma = livroDTO.languages();
+        this.numeroDeDownloads = livroDTO.download_count();
     }
 
     public String getTitulo() {
@@ -34,19 +36,19 @@ public class Livro {
         this.titulo = titulo;
     }
 
-    public String getAutor() {
+    public List<Autor> getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(List<Autor> autor) {
         this.autor = autor;
     }
 
-    public String getIdioma() {
+    public List<String> getIdioma() {
         return idioma;
     }
 
-    public void setIdioma(String idioma) {
+    public void setIdioma(List<String> idioma) {
         this.idioma = idioma;
     }
 
@@ -60,11 +62,10 @@ public class Livro {
 
     @Override
     public String toString() {
-        return "Livro{" +
+        return
                 "titulo='" + titulo + '\'' +
                 ", autor='" + autor + '\'' +
                 ", idioma='" + idioma + '\'' +
-                ", numeroDeDownloads=" + numeroDeDownloads +
-                '}';
+                ", numeroDeDownloads=" + numeroDeDownloads;
     }
 }

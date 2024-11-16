@@ -1,6 +1,7 @@
 package com.viniwebs.literalura.main;
 
 import com.viniwebs.literalura.model.Livro;
+import com.viniwebs.literalura.model.Dados;
 import com.viniwebs.literalura.service.Api;
 import com.viniwebs.literalura.service.ConvertsData;
 
@@ -10,7 +11,7 @@ import java.util.Scanner;
 
 public class Main {
     private final Scanner sc = new Scanner(System.in);
-    private static final String URL = "https://gutendex.com/books/";
+    private static final String URL = "https://gutendex.com/books/?search=";
     private Api api = new Api();
 
     private final ConvertsData convertsData = new ConvertsData();
@@ -52,10 +53,12 @@ public class Main {
     private void buscarLivro() {
         System.out.print("Insira o titulo do livro: ");
         String titulo = sc.nextLine();
-        String json = api.obterDados(URL + "?search=" + titulo.replace(" ", "%20"));
-        Livro dados = convertsData.getData(json , Livro.class);
-        livros.add(dados);
-        System.out.println(dados);
+        String json = api.obterDados(URL + titulo.replace(" ", "%20"));
+        Dados dados = convertsData.getData(json , Dados.class);
+
+        Livro livro = new Livro(dados.results().get(0));
+        System.out.println(livro);
+        livros.add(livro);
     }
 
     private void listarLivros() {
