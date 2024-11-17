@@ -1,11 +1,26 @@
 package com.viniwebs.literalura.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = "autores")
 public class Autor {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String nome;
     private Integer anoNascimento;
     private Integer anoMorte;
+
+    @ManyToMany(mappedBy = "autor", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    private Set<Livro> livro = new HashSet<>();
 
     public Autor() {}
 
@@ -43,6 +58,22 @@ public class Autor {
 
     public void setAnoMorte(Integer anoMorte) {
         this.anoMorte = anoMorte;
+    }
+
+    public Set<Livro> getLivro() {
+        return livro;
+    }
+
+    public void setLivro(Set<Livro> livro) {
+        this.livro = livro;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @Override

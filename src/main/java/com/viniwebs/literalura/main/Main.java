@@ -1,13 +1,14 @@
 package com.viniwebs.literalura.main;
 
+import com.viniwebs.literalura.model.Autor;
 import com.viniwebs.literalura.model.Livro;
 import com.viniwebs.literalura.model.Dados;
+import com.viniwebs.literalura.repository.AutorRepository;
+import com.viniwebs.literalura.repository.LivroRepository;
 import com.viniwebs.literalura.service.Api;
 import com.viniwebs.literalura.service.ConvertsData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     private final Scanner sc = new Scanner(System.in);
@@ -16,6 +17,14 @@ public class Main {
 
     private final ConvertsData convertsData = new ConvertsData();
     private final List<Livro> livros = new ArrayList<>();
+
+    private final LivroRepository livroRepository;
+    private final AutorRepository autorRepository;
+
+    public Main(LivroRepository livroService, AutorRepository autorService) {
+        this.livroRepository = livroService;
+        this.autorRepository = autorService;
+    }
 
     public void menu() {
         int opcao = -1;
@@ -32,7 +41,6 @@ public class Main {
 
             System.out.println(menu);
             opcao = sc.nextInt();
-            sc.nextLine();
 
             switch (opcao){
                 case 1:
@@ -40,6 +48,12 @@ public class Main {
                     break;
                 case 2:
                     listarLivros();
+                    break;
+                case 3:
+                    listarAutores();
+                    break;
+                case 5:
+                    listarPorIdioma();
                     break;
                 case 0:
                     break;
@@ -57,11 +71,75 @@ public class Main {
         Dados dados = convertsData.getData(json , Dados.class);
 
         Livro livro = new Livro(dados.results().get(0));
+
+        livroRepository.save(livro);
         System.out.println(livro);
         livros.add(livro);
     }
 
     private void listarLivros() {
+        List<Livro> livros = livroRepository.findAll();
+        System.out.println("--------------Livros----------------");
         livros.forEach(System.out::println);
+    }
+
+    private void listarAutores() {
+        List<Autor> autores = autorRepository.findAll();
+        System.out.println("--------------Autores----------------");
+        autores.forEach(System.out::println);
+    }
+
+    private void listarPorIdioma() {
+        var opção = -1;
+        String idioma = "";
+
+        System.out.println("\nSelecione o idioma do livro: ");
+        var menu = """
+               \n
+               1 - Ingles
+               2 - Frances
+               3 - Alemao
+               4 - Portugues
+               5 - Espanhol
+               """;
+
+        System.out.println(menu);
+
+        if (sc.hasNextInt()) {
+            opção = sc.nextInt();
+
+            switch (opção) {
+                case 1:
+                    idioma = "en";
+                    break;
+                case 2:
+                    idioma = "fr";
+                    break;
+                case 3:
+                    idioma = "de";
+                    break;
+                case 4:
+                    idioma = "pt";
+                    break;
+                case 5:
+                    idioma = "es";
+                    break;
+                default:
+                    System.out.println("\nOpção invalida");
+            }
+
+            System.out.println("\nListando livros:");
+            List<Livro> livros = livroRepository.findByIdiomaContaining(idioma);
+
+            if (!livros.isEmpty()) {
+                livros.forEach(System.out::println);
+            } else {
+                System.out.println("\nNenhum resultado, selecione outro idioma");
+            }
+
+        } else {
+            System.out.println("\nSelecione uma opçao valida");
+            sc.next();
+        }
     }
 }
