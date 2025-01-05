@@ -2,10 +2,7 @@ package com.viniwebs.literalura.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "autores")
@@ -81,5 +78,18 @@ public class Autor {
         return "nome='" + nome + '\'' +
                 ", anoNascimento=" + anoNascimento +
                 ", anoMorte=" + anoMorte;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Autor autor = (Autor) o;
+        return Objects.equals(nome, autor.nome) && Objects.equals(anoNascimento, autor.anoNascimento) && Objects.equals(anoMorte, autor.anoMorte);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nome, anoNascimento, anoMorte);
     }
 }

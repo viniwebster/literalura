@@ -41,6 +41,7 @@ public class Main {
 
             System.out.println(menu);
             opcao = sc.nextInt();
+            sc.nextLine();
 
             switch (opcao){
                 case 1:
@@ -51,6 +52,9 @@ public class Main {
                     break;
                 case 3:
                     listarAutores();
+                    break;
+                case 4:
+                    listarAutoresVivos();
                     break;
                 case 5:
                     listarPorIdioma();
@@ -65,16 +69,20 @@ public class Main {
     }
 
     private void buscarLivro() {
-        System.out.print("Insira o titulo do livro: ");
-        String titulo = sc.nextLine();
-        String json = api.obterDados(URL + titulo.replace(" ", "%20"));
-        Dados dados = convertsData.getData(json , Dados.class);
+        try {
+            System.out.print("Insira o titulo do livro: ");
+            String titulo = sc.nextLine();
+            String json = api.obterDados(URL + titulo.replace(" ", "%20"));
+            Dados dados = convertsData.getData(json , Dados.class);
 
-        Livro livro = new Livro(dados.results().get(0));
+            Livro livro = new Livro(dados.results().get(0));
 
-        livroRepository.save(livro);
-        System.out.println(livro);
-        livros.add(livro);
+            livroRepository.save(livro);
+            System.out.println(livro);
+            livros.add(livro);
+        } catch (Exception e) {
+            System.out.println("Erro ao buscar livro");
+        }
     }
 
     private void listarLivros() {
@@ -85,8 +93,9 @@ public class Main {
 
     private void listarAutores() {
         List<Autor> autores = autorRepository.findAll();
+        Set<Autor> autoresUnicos = new HashSet<>(autores);
         System.out.println("--------------Autores----------------");
-        autores.forEach(System.out::println);
+        autoresUnicos.forEach(System.out::println);
     }
 
     private void listarPorIdioma() {
@@ -107,6 +116,7 @@ public class Main {
 
         if (sc.hasNextInt()) {
             opção = sc.nextInt();
+            sc.nextLine();
 
             switch (opção) {
                 case 1:
@@ -134,12 +144,23 @@ public class Main {
             if (!livros.isEmpty()) {
                 livros.forEach(System.out::println);
             } else {
-                System.out.println("\nNenhum resultado, selecione outro idioma");
+                System.out.println("Nenhum resultado, selecione outro idioma");
             }
 
         } else {
             System.out.println("\nSelecione uma opçao valida");
             sc.next();
+        }
+    }
+
+    private void listarAutoresVivos() {
+        System.out.print("\nDigite o ano: ");
+        int ano = sc.nextInt();
+        List<Autor> autores = autorRepository.findAutoresVivos(ano);
+        if (!autores.isEmpty()) {
+            autores.forEach(System.out::println);
+        } else  {
+            System.out.println("\nNenhum autor vivo no ano informado");
         }
     }
 }
